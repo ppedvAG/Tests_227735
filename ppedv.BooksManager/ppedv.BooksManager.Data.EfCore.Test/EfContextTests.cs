@@ -1,5 +1,8 @@
+using AutoFixture;
+using AutoFixture.Kernel;
 using FluentAssertions;
 using ppedv.BooksManager.Model;
+using System.Reflection;
 
 namespace ppedv.BooksManager.Data.EfCore.Test
 {
@@ -103,6 +106,49 @@ namespace ppedv.BooksManager.Data.EfCore.Test
                 var loaded = con.Books.Find(book.Id);
                 loaded.Should().BeNull();
             }
+        }
+
+        [Fact]
+        [Trait("", "Integration")]
+        public void Can_create_Book_with_AutoFix()
+        {
+            var fix = new Fixture();
+            fix.Behaviors.Add(new OmitOnRecursionBehavior());
+            fix.Customizations.Add(new PropertyNameOmitter("Id"));
+            var book = fix.Create<Book>();
+
+            using (var con = new EfContext(conString))
+            {
+                con.Database.EnsureCreated();
+                con.Add(book);
+                var result = con.SaveChanges();
+                result.Should().BeGreaterThan(0);
+            }
+
+            using (var con = new EfContext(conString))
+            {
+                var loaded = con.Books.Find(book.Id);
+                loaded.Should().BeEquivalentTo(book, x => x.IgnoringCyclicReferences());
+            }
+        }
+    }
+
+    internal class PropertyNameOmitter : ISpecimenBuilder
+    {
+        private readonly IEnumerable<string> names;
+
+        internal PropertyNameOmitter(params string[] names)
+        {
+            this.names = names;
+        }
+
+        public object Create(object request, ISpecimenContext context)
+        {
+            var propInfo = request as PropertyInfo;
+            if (propInfo != null && names.Contains(propInfo.Name))
+                return new OmitSpecimen();
+
+            return new NoSpecimen();
         }
     }
 }
