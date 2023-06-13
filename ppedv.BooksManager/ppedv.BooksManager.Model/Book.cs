@@ -8,6 +8,6 @@
         public int Pages { get; set; }
         public DateTime PublishDate { get; set; }
 
-        public ICollection<Author> Authors { get; set; } = new HashSet<Author>();
+        public virtual ICollection<Author> Authors { get; set; } = new HashSet<Author>();
     }
 }
