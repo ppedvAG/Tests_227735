@@ -1,6 +1,7 @@
 using AutoFixture;
 using AutoFixture.Kernel;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using ppedv.BooksManager.Model;
 using System.Reflection;
 
@@ -127,7 +128,9 @@ namespace ppedv.BooksManager.Data.EfCore.Test
 
             using (var con = new EfContext(conString))
             {
-                var loaded = con.Books.Find(book.Id);
+                //var loaded = con.Books.Find(book.Id);
+                var loaded = con.Books.Include(x => x.Authors).FirstOrDefault(x => x.Id == book.Id);
+
                 loaded.Should().BeEquivalentTo(book, x => x.IgnoringCyclicReferences());
             }
         }
