@@ -6,6 +6,7 @@
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int Pages { get; set; }
+        public decimal Price { get; set; }
         public DateTime PublishDate { get; set; }
 
         public virtual ICollection<Author> Authors { get; set; } = new HashSet<Author>();
