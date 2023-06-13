@@ -74,6 +74,29 @@ namespace ppedv.BooksManager.Core.Tests
             result.Title.Should().Be("Warum man bei Windows 10 bleiben sollte");
         }
 
+        [Fact]
+        public void Verify_that_bibel_gets_deleted()
+        {
+            var mock = new Mock<IRepository>();
+            
+            mock.Setup(x => x.GetAll<Book>()).Returns(() =>
+            {
+                var b1 = new Book() { Title = "SQL Server 2005", Price = 100, Pages = 10, PublishDate = new DateTime(3005, 1, 1) };
+                var b2 = new Book() { Title = "The Art of Unit Testing", Price = 100, Pages = 30, PublishDate = new DateTime(2013, 1, 1) };
+                var b3 = new Book() { Title = "die bibel ist toll", Price = 100, Pages = 30, PublishDate = new DateTime(2022, 1, 1) };
+                var b4 = new Book() { Title = "Design Patterns", Price = 100, Pages = 20, PublishDate = new DateTime(1994, 1, 1) };
+                return new[] { b1, b2, b3, b4 };
+            });
+            var bs = new BooksService(mock.Object);
+
+            var result = bs.GetBestBookByPricePerPageCost();
+
+            mock.Verify(x => x.Add(It.IsAny<Book>()), Times.Never);
+
+            mock.Verify(x => x.Delete(It.IsAny<Book>()), Times.Once);
+
+        }
+
 
 
         [Fact]

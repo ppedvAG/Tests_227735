@@ -25,6 +25,12 @@ namespace ppedv.BooksManager.Core
                 PricePerPageCost = book.Price / book.Pages
             });
 
+            foreach (var b in books)
+            {
+                if(b.Title.Contains("bibel"))
+                    repo.Delete(b);
+            }
+
             // Find the book with the lowest price per page cost
             var bestBook = booksWithPricePerPageCost.OrderBy(b => b.PricePerPageCost)
                                                     .ThenByDescending(x => x.Book.PublishDate)
@@ -32,6 +38,7 @@ namespace ppedv.BooksManager.Core
 
             return bestBook;
         }
+
 
     }
 }
