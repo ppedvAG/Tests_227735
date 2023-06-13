@@ -16,7 +16,7 @@ namespace ppedv.BooksManager.Core
         public Book GetBestBookByPricePerPageCost()
         {
             // Retrieve all books from the repository
-            var books = repo.GetAll<Book>();
+            var books = repo.GetAll<Book>().Where(x => x.Pages > 0);
 
             // Calculate the price per page cost for each book
             var booksWithPricePerPageCost = books.Select(book => new
@@ -26,7 +26,9 @@ namespace ppedv.BooksManager.Core
             });
 
             // Find the book with the lowest price per page cost
-            var bestBook = booksWithPricePerPageCost.OrderBy(b => b.PricePerPageCost).FirstOrDefault()?.Book;
+            var bestBook = booksWithPricePerPageCost.OrderBy(b => b.PricePerPageCost)
+                                                    .ThenByDescending(x => x.Book.PublishDate)
+                                                    .FirstOrDefault()?.Book;
 
             return bestBook;
         }
