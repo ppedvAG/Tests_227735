@@ -1,4 +1,5 @@
-﻿using ppedv.BooksManager.Data.EfCore;
+﻿using ppedv.BooksManager.Core;
+using ppedv.BooksManager.Data.EfCore;
 using ppedv.BooksManager.Model;
 using ppedv.BooksManager.Model.Contracts;
 using System.Text;
@@ -20,5 +21,11 @@ foreach (var b in repo.GetAll<Book>())
         Console.WriteLine($"\t{a.Name}");
     }
 }
+
+
+var bs = new BooksService(repo);
+var bb = bs.GetBestBookByPricePerPageCost();
+Console.WriteLine($"BEST BOOK: {bb.Title} Pages: {bb.Pages} Price {bb.Price:c}");
+
 
 
